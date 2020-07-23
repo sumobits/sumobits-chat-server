@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "definitions": {
+    "conversation":{
+      "$id": "#conversation",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The conversation's unique identifier.",
+          "type": "string",
+          "readOnly": true
+        },
+        "messages": {
+          "$ref": "#message",
+          "default": [],
+          "description": "Collection of messages"
+        },
+        "active": {
+          "default": false,
+          "description": "Indicates if the conversion is active",
+          "type": "boolean"
+        },
+        "created": {
+          "default": false,
+          "description": "Date and time the conversation was created",
+          "type": "string"
+        }
+      },
+      "required": [ "id", "messages", "active", "created" ]
+    },
+    "message": {
+      "$id": "#message",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The message's unique identifier.",
+          "type": "string",
+          "readOnly": true
+        },
+        "from": {
+          "description": "The message's sender.",
+          "$ref": "#user"
+        },
+        "to": {
+          "$ref": "#user",
+          "description": "The message's recipient."
+        },
+        "subject": {
+          "description": "The message's subject, if any.",
+          "type": "string"
+        },
+        "body": {
+          "description": "This is the message's body",
+          "type": "string"
+        },
+        "attachments": {
+          "default": [],
+          "description": "The message's attachments, if any",
+          "type": "array"
+        },
+        "sent": {
+          "description": "The time the message was sent.",
+          "type": "string"
+        },
+        "delivered": {
+          "description": "The time the message delivered",
+          "type": "string"
+        }
+      },
+      "required": [  "id", "to", "from", "body" ]
+    },
+    "preferences": {},
+    "user": {
+      "$id": "#user",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The user's unique identifier",
+          "type": "string",
+          "readOnly": true
+        },
+        "firstName": {
+          "description": "The user's first name.",
+          "type": "string"
+        },
+        "lastName": {
+          "description": "The user's last name.",
+          "type": "string"
+        },
+        "email": {
+          "description": "The user's email address.",
+          "type": "string"
+        },
+        "password": {
+          "description": "The user's password.",
+          "type": "string"
+        },
+        "contacts": {
+          "default": [],
+          "description": "The user's current contacts.",
+          "items": {
+            "$ref": "#user"
+          },
+          "type": "array"
+        },
+        "lastLogin": {
+          "description": "The last time the user logged",
+          "type": "string"
+        },
+        "online": {
+          "default": false,
+          "description": "Is the user currently online?",
+          "type": "boolean"
+        }
+      },
+      "required": [ "id", "email", "firstName", "lastName", "password", "online" ]
+   }
+  },
+
+  "type": "object",
+  
+  "properties": {
+    "conversations": { "$ref": "#/definitions/conversations" },
+    "message": { "$ref": "#/definitions/message" },
+    "user": { "$ref": "#/definitions/user" }
+  }
+}

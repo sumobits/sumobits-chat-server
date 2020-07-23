@@ -1,0 +1,37 @@
+mutation createConversation($msg: MessageInput!) {
+  createConversation(msg: $msg) {
+    id
+    messages {
+      id
+      from {
+        id
+        firstName
+        lastName
+        email
+      }
+      to {
+        id
+        firstName
+        lastName
+        email
+      }
+      subject
+      body
+    }
+    created
+  }
+}
+
+## Variables
+{
+  "msg": {
+    "from": {
+      "id": "935af80c-4496-4acd-835a-cda52fe42c6c"
+    },
+    "to": {
+      "id": "cc7f673e-9ccc-415e-8b93-b4ec5c581cd8"
+    },
+    "subject": "Hey There",
+    "body": "I just wanted to say hi!"
+  }
+}

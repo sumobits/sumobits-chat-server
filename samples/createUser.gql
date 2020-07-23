@@ -1,0 +1,14 @@
+mutation createUser($first: String!, $last: String!, $email: String!, $password: String!) {
+  createUser(firstName: $first, lastName: $last, email:$email, password: $password) {
+    id
+    created
+  }
+}
+
+## Variables
+{
+  "first": "Someone",
+  "last": "Noone",
+  "email": "someone@nowhere.co",
+  "password": "password1234"
+}

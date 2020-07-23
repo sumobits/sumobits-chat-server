@@ -1,0 +1,24 @@
+query findConversation($id: String!) {
+  findConversation(id: $id) {
+    id
+    messages {
+    	from {
+        firstName,
+        lastName,
+        email
+      },
+    	to {
+        firstName,
+        lastName,
+        email
+      },
+      subject,
+      body
+  	}
+  }
+}
+
+## Variables
+{
+    "id": "14087b2d-b801-4f19-aff1-ed4d9a467bfa"
+}

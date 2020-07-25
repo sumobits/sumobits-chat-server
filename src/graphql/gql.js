@@ -50,7 +50,9 @@ export const typeDefs = gql`
     type Query {
         findConversation(id: String!): Conversation
         findUser(id: String!): User
+        findUserByEmail(email: String): User
         findUserConversations(id: String!): [Conversation]!
+        searchUsers(input: String!): [User]!
     }
 
     type Mutation {
@@ -60,6 +62,8 @@ export const typeDefs = gql`
         deleteConversation(id: String!): Boolean!
         deleteMessageFromConversation(conversationId: String!, msgId: String!): Boolean!
         deleteUser(id: String!): Boolean!
+        loginUser(id: String!): User!
+        logoutUser(id: String!): User!
     }
 `;
 
@@ -72,8 +76,14 @@ export const resolvers = {
         findUser: async (src, { id }, { dataSources }) => {
             return await dataSources.mongo.findUser(id);
         },
+        findUserByEmail: async (src, { email }, { dataSources }) => {
+            return await dataSources.mongo.findUserByEmail(email);
+        },
         findUserConversations: async (src, { id }, { dataSources }) => {
             return await dataSources.mongo.findUserConversations(id);
+        },
+        searchUsers: async (src, { input }, { dataSources }) => {
+            return await dataSources.mongo.searchUsers(input);
         },
     },
     Mutation: {
@@ -94,6 +104,12 @@ export const resolvers = {
         },
         deleteUser: async (src, { id }, { dataSources }) => {
             return await dataSources.mongo.deleteUser(id);
+        },
+        loginUser: async (src, { id }, { dataSources }) => {
+            return await dataSources.mongo.loginUser(id);
+        },
+        logoutUser: async (src, { id }, { dataSources }) => {
+            return await dataSources.mongo.logoutUser(id);
         },
     },
 };

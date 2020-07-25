@@ -258,18 +258,104 @@ class MongoDataSource extends DataSource {
         }
     }
 
+    findUserByEmail = async email => {
+        if (!this.client) {
+            throw new Error('MongoClient failed to initialize');
+        }
+
+        try {
+            const users = await this.database.collection(
+                MongoDataSource.USER_COLLECTION).find({ email: { $eq: email } }).toArray();
+            console.log(JSON.stringify(users));
+            if (users) {
+                return users[0];
+            }
+        } catch (err) {
+            console.error(`Error finding user: ${err}`);
+            throw err;
+        }
+    }
+
     findUserConversations = async id => {
         if (!this.client) {
             throw new Error('MongoClient failed to initialize');
         }
 
         try {
-            return await this.database.collection(MongoDataSource.CONVERSATION_COLLECTION).find($or[
-                { 'messages.from.id': { $eq: id } }, { 'messages.to.id': { $eq: id } } ]).toArray();
+            return await this.database.collection(
+                MongoDataSource.CONVERSATION_COLLECTION).find(
+                    { $or: [ { 'messages.from.id': { $eq: id } }, { 'messages.to.id': { $eq: id } } ] }).toArray();
         } catch (err) {
             console.error(`Error finding user conversations: ${err}`);
             throw err;
         }
+    }
+
+    loginUser = async id => {
+        if (!this.client) {
+            throw new Error('MongoClient failed to initialize');
+        }
+
+        try {
+            const user = await this.database.collection(
+                MongoDataSource.USER_COLLECTION).findOneAndUpdate({ id }, 
+                    {
+                        $set: {
+                            lastLogin: moment().format(), 
+                            online: true 
+                        } 
+                    }, { returnOriginal: false });
+
+            if (user) {
+                return user.value;
+            }
+        } catch (err) {
+            console.error(`Error logging in user: ${err}`);
+            throw err;
+        }
+    }
+
+    logoutUser = async id => {
+        if (!this.client) {
+            throw new Error('MongoClient failed to initialize');
+        }
+
+        try {
+            const user = await this.database.collection(
+                MongoDataSource.USER_COLLECTION).findOneAndUpdate({ id },
+                    { $set: { online: false } }, { returnOriginal: false });
+
+            if (user) {
+                return user.value;
+            }
+        } catch (err) {
+            console.error(`Error logging in user: ${err}`);
+            throw err;
+        }
+    }
+
+    searchUsers = async input => {
+        if (!this.client) {
+            throw new Error('MongoClient failed to initialize');
+        }
+
+        const regex = `^${input}`;
+        try {
+            const users = await this.database.collection(
+                MongoDataSource.USER_COLLECTION).find(
+                    { 
+                        $or: [
+                            { firstName: { $regex: regex } },
+                            { lastName: { $regex: regex } },
+                            { email: { $regex: regex } },
+                        ]
+                    }).toArray();
+
+            return users;
+        } catch (err) {
+            console.error(`Error finding user: ${err}`);
+            throw err;
+        }        
     }
 };
 

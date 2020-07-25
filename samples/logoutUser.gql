@@ -1,0 +1,12 @@
+mutation logoutUser($id: String!) {
+    logoutUser(id: $id) {
+        email
+        lastLogin
+        online
+    }
+}
+
+## Variables
+{
+    "id": "2f63a30b-32f2-41e0-b0e5-e51d7e22ec37"
+}

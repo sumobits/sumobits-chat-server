@@ -1,0 +1,15 @@
+query findUserByEmail($email: String!) {
+    findUserByEmail(email: $email) {
+        id
+        firstName
+        lastName
+        email
+        lastLogin
+        online
+    }
+}
+
+## Variables
+{
+    "email": "someone@nowhere.co"
+}

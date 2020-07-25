@@ -1,0 +1,15 @@
+query searchUsers($input: String!) {
+    searchUsers(input: $input) {
+        id
+        firstName
+        lastName
+        email
+        online
+        lastLogin
+    }
+}
+
+## Variables
+{
+    "input": "o"
+}

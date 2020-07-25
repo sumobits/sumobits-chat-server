@@ -1,0 +1,26 @@
+query findUserConversations($userId: String!) {
+    findUserConversations(id: $userId) {
+        id
+    		messages {
+          id
+          from {
+            firstName
+            lastName
+            email
+          }
+          to {
+            firstName
+            lastName
+            email
+          }
+          subject
+          body
+          sent
+  			}
+    }
+}
+
+## Variables
+{
+    "userId": "935af80c-4496-4acd-835a-cda52fe42c6c"
+}

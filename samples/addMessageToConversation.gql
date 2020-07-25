@@ -1,0 +1,32 @@
+mutation addMessageToConversation($id: String!, $msg: MessageInput) {
+  addMessageToConversation(id: $id, msg: $msg) {
+    id,
+    messages {
+    	id,
+      to {
+        email
+      }
+      from {
+        email
+      },
+      subject,
+      body,
+      sent
+  	}
+  }
+}
+
+## Variables
+{
+  "id": "ec419b5a-c121-4bc9-8987-3dd3723926cd",
+  "msg": {
+    "from": {
+      "id": "cc7f673e-9ccc-415e-8b93-b4ec5c581cd8"
+    },
+    "to": {
+      "id": "935af80c-4496-4acd-835a-cda52fe42c6c"
+    },
+    "subject": "Sup",
+    "body": "How are you doin'"
+  }
+}

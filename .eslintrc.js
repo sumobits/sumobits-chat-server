@@ -13,7 +13,7 @@ module.exports = {
 		'prefer-destructuring': [ 2, { 
 			'object': true,
 		} ],
-		'quotes': [ 2, 'single' ],
+		'quotes': [ 1, 'single' ],
 		'prefer-template': [ 2 ],
 		'no-eval': [ 2 ],
 		'prefer-rest-params': [ 2 ],

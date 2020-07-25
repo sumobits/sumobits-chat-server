@@ -68,6 +68,7 @@ console.warn = (...args) => {
 /* end logging */
 
 const dataSource = new MongoDataSource();
+dataSource.connect();
 
 const apolloServer = new ApolloServer({
 	dataSources: () => {

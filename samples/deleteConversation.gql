@@ -1,0 +1,8 @@
+mutation deleteConversation($id: String!) {
+    deleteConversation(id: $id)
+}
+
+## Variables
+{
+    "id": "1dbd5b23-efa9-4ee1-b637-a489fffcfe73"
+}

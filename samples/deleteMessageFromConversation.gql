@@ -1,0 +1,9 @@
+mutation deleteMessageFromConverstation($conversationId: String!, $msgId: String!) {
+    deleteMessageFromConversation(conversationId: $conversationId, msgId: $msgId)
+}
+
+## Variables
+{
+    "conversationId": "1580620c-e26e-4225-9924-da88ad0113b6",
+    "msgId": "bda2b23f-3e1f-40ab-8554-ce96da75fc29"
+}

@@ -1,0 +1,8 @@
+mutation deleteUser($id: String!) {
+    deleteUser(id: $id)
+}
+
+## Variables
+{
+    "id": "cc7f673e-9ccc-415e-8b93-b4ec5c581cd8"
+}

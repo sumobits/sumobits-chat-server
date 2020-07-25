@@ -58,6 +58,7 @@ export const typeDefs = gql`
         createConversation(msg: MessageInput!): Conversation!
         createUser(firstName: String!, lastName: String!, email: String!, password: String): User!
         deleteConversation(id: String!): Boolean!
+        deleteMessageFromConversation(conversationId: String!, msgId: String!): Boolean!
         deleteUser(id: String!): Boolean!
     }
 `;
@@ -87,6 +88,9 @@ export const resolvers = {
         },
         deleteConversation: async (src, { id }, { dataSources }) => {
             return await dataSources.mongo.deleteConversation(id);
+        },
+        deleteMessageFromConversation: async (src, { conversationId, msgId }, { dataSources }) => {
+            return await dataSources.mongo.deleteMessageFromConversation(conversationId, msgId);
         },
         deleteUser: async (src, { id }, { dataSources }) => {
             return await dataSources.mongo.deleteUser(id);

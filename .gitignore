@@ -42,5 +42,4 @@ yarn-error.log
 # app
 .env
 dist/
-*.log
-
+logs/

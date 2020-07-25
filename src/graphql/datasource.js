@@ -181,6 +181,27 @@ class MongoDataSource extends DataSource {
         }
     }
 
+    deleteMessageFromConversation = async (conversationId, msgId) => {
+        if (!this.client) {
+            throw new Error('MongoClient failed to initialize');
+        }
+
+        try {
+            const result = await this.database.collection(
+                MongoDataSource.CONVERSATION_COLLECTION).updateOne(
+                    { id: conversationId }, { $pull: { 'messages': { id: { $eq: msgId } } } });
+
+            if (result && result.deletedCount === 1) {
+                console.debug('Successfully deleted conversation');
+            }
+
+            return true;
+        } catch (err) {
+            console.error(`Error deleting coversation: ${err}`);
+            throw err;
+        }
+    }
+
     deleteUser = async id => {
         if (!this.client) {
             throw new Error('MongoClient failed to initialize');

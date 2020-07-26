@@ -56,14 +56,17 @@ export const typeDefs = gql`
     }
 
     type Mutation {
-        addMessageToConversation(id: String!, msg: MessageInput): Conversation!
-        createConversation(msg: MessageInput!): Conversation!
-        createUser(firstName: String!, lastName: String!, email: String!, password: String): User!
+        addContact(userId: String!, contactId: String!): User
+        addMessageToConversation(id: String!, msg: MessageInput): Conversation
+        createConversation(msg: MessageInput!): Conversation
+        createUser(firstName: String!, lastName: String!, email: String!, password: String): User
+        deleteContact(userId: String!, contactId: String!): User
         deleteConversation(id: String!): Boolean!
         deleteMessageFromConversation(conversationId: String!, msgId: String!): Boolean!
         deleteUser(id: String!): Boolean!
-        loginUser(id: String!): User!
-        logoutUser(id: String!): User!
+        editMessageInConversation(conversationId: String!, msgId: String!, body: String!): Conversation
+        loginUser(id: String!): User
+        logoutUser(id: String!): User
     }
 `;
 
@@ -87,6 +90,9 @@ export const resolvers = {
         },
     },
     Mutation: {
+        addContact: async (src, { userId, contactId }, { dataSources }) => {
+            return await dataSources.mongo.addContact(userId, contactId);
+        },
         addMessageToConversation: async (src, { id, msg }, { dataSources }) => {
             return await dataSources.mongo.addMessageToConversation(id, msg);
         },
@@ -96,6 +102,9 @@ export const resolvers = {
         createUser: async (src, { firstName, lastName, email, password }, { dataSources }) => {
             return await dataSources.mongo.createUser(firstName, lastName, email, password);
         },
+        deleteContact: async (src, { userId, contactId }, { dataSources }) => {
+            return await dataSources.mongo.deleteContact(userId, contactId);
+        },
         deleteConversation: async (src, { id }, { dataSources }) => {
             return await dataSources.mongo.deleteConversation(id);
         },
@@ -104,6 +113,9 @@ export const resolvers = {
         },
         deleteUser: async (src, { id }, { dataSources }) => {
             return await dataSources.mongo.deleteUser(id);
+        },
+        editMessageInConversation: async (src, { conversationId, msgId, body }, { dataSources }) => {
+            return await dataSources.mongo.editMessageInConveration(conversationId, msgId, body);  
         },
         loginUser: async (src, { id }, { dataSources }) => {
             return await dataSources.mongo.loginUser(id);

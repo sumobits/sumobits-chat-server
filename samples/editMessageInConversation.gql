@@ -1,0 +1,23 @@
+mutation editMessageInConversation($conversationId: String!, $msgId: String!, $body: String!) {
+    editMessageInConversation(conversationId: $conversationId, msgId: $msgId, body: $body) {
+        id,
+        messages {
+            id
+            from {
+                email
+            }
+            to {
+                email
+            }
+            subject
+            body
+        }
+    }
+}
+
+## Variables
+{
+    "conversationId": "0cc1b8cc-d97b-4232-bf34-e9f70d080907",
+    "msgId": "2f63a30b-32f2-41e0-b0e5-e51d7e22ec37",
+    "body": "This is a freshly edited message"
+}

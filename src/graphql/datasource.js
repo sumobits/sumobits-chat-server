@@ -29,6 +29,31 @@ class MongoDataSource extends DataSource {
         this.client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
     }
 
+    addContact = async (userId, contactId) => {
+        if (!this.client) {
+            throw new Error('MongoClient failed to initialize');
+        }
+
+        try {
+            const contact = await lookupUser(this.database, contactId);
+            if (contact) {
+                const user = await this.database.collection(
+                    MongoDataSource.USER_COLLECTION).findOneAndUpdate(
+                        { id: { $eq: userId } },
+                        { $push: {  contacts: contact } },
+                        { returnOriginal: false },
+                    );
+
+                if (user) {
+                    return user.value;
+                }
+            }
+        } catch (err) {
+            console.error(`Error adding contact ${contactId} to user ${userId} -> ${err}`);
+            throw err;
+        }
+    }
+
     addMessageToConversation = async (id, msg) => {
         if (!this.client) {
             throw new Error('MongoClient failed to initialize');
@@ -60,7 +85,7 @@ class MongoDataSource extends DataSource {
                 return conversation.value;
             }
         } catch (err) {
-            console.error(`Error creating message: ${err}`);
+            console.error(`Error adding message to conversation ${id} -> ${err}`);
             throw err;
         }
     }
@@ -82,7 +107,7 @@ class MongoDataSource extends DataSource {
             this.database = this.client.db(this.dbName);
             console.info(`Successfully connected to: ${this.dbName}`);
         } catch(err) {
-            console.error(`Error connecting to: ${this.dbName} - ${err}`);
+            console.error(`Error connecting to: ${this.dbName} -> ${err}`);
             throw err;
         }
        
@@ -126,7 +151,7 @@ class MongoDataSource extends DataSource {
 
             return conversation;
         } catch(err) {
-            console.error(`Error creating conversation: ${err}`);
+            console.error(`Error creating conversation -> ${err}`);
             throw err;
         }
     }
@@ -156,9 +181,32 @@ class MongoDataSource extends DataSource {
 
             return user;
         } catch (err) {
-            console.error(`Error creating user: ${err}`);
+            console.error(`Error creating user -> ${err}`);
             throw err;
         }
+    }
+
+    deleteContact = async (userId, contactId) => {
+        if (!this.client) {
+            throw new Error('MongoClient failed to initalize');
+        }
+
+        try {
+            const user = await this.database.collection(
+                MongoDataSource.USER_COLLECTION).findOneAndUpdate(
+                    { id: { $eq: userId } },
+                    { $pull: { 'contacts': { id: { $eq: contactId } } } },
+                    { returnOriginal: false }
+            );
+
+            if (user) {
+                return user.value;
+            }
+        } catch(err) {
+            console.error(`Error deleting contact ${contactId} from user ${userId} -> ${err}`);
+        }
+
+        return false;
     }
 
     deleteConversation = async id => {
@@ -172,13 +220,14 @@ class MongoDataSource extends DataSource {
 
             if (result && result.deletedCount === 1) {
                 console.debug('Successfully deleted conversation');
+                return true;
             }
-
-            return true;
         } catch (err) {
-            console.error(`Error deleting coversation: ${err}`);
+            console.error(`Error deleting conversation ${id} -> ${err}`);
             throw err;
         }
+
+        return false;
     }
 
     deleteMessageFromConversation = async (conversationId, msgId) => {
@@ -193,13 +242,14 @@ class MongoDataSource extends DataSource {
 
             if (result && result.deletedCount === 1) {
                 console.debug('Successfully deleted conversation');
+                return true;
             }
-
-            return true;
         } catch (err) {
-            console.error(`Error deleting coversation: ${err}`);
+            console.error(`Error deleting message ${msgId} conversation ${conversationId} -> ${err}`);
             throw err;
         }
+
+        return false;
     }
 
     deleteUser = async id => {
@@ -213,11 +263,36 @@ class MongoDataSource extends DataSource {
 
             if (result && result.deletedCount === 1) {
                 console.debug('Successfully deleted user');
+                return true;
             }
-
-            return true;
         } catch (err) {
-            console.error(`Error deleting user: ${err}`);
+            console.error(`Error deleting user ${id} -> ${err}`);
+            throw err;
+        }
+
+        return false;
+    }
+
+    editMessageInConveration = async (conversationId, msgId, body) => {
+        if (!this.client) {
+            throw new Error('MongoClient failed to initialize');
+        }
+
+        try {
+            const conversation = await this.database.collection(
+                MongoDataSource.CONVERSATION_COLLECTION).findOneAndUpdate(
+                    { 
+                        $and:[
+                            { id: { $eq: conversationId } },
+                            { 'messages.id': { $eq: msgId } }
+                        ]
+                    }, { $set: { 'messages.$.body': body } }, { returnOriginal: false } );
+            
+            if (conversation) {
+                return conversation.value;
+            }
+        } catch(err) {
+            console.error(`Error editing message ${msgId} from conversation ${conversationId} -> ${err}`);
             throw err;
         }
     }
@@ -235,7 +310,7 @@ class MongoDataSource extends DataSource {
                 return conversations[0];
             }
         } catch (err) {
-            console.error(`Error finding conversation: ${err}`);
+            console.error(`Error finding conversation ${id} -> ${err}`);
             throw err;
         }
     }
@@ -253,7 +328,7 @@ class MongoDataSource extends DataSource {
                 return users[0];
             }
         } catch (err) {
-            console.error(`Error finding user: ${err}`);
+            console.error(`Error finding user ${id} -> ${err}`);
             throw err;
         }
     }
@@ -271,7 +346,7 @@ class MongoDataSource extends DataSource {
                 return users[0];
             }
         } catch (err) {
-            console.error(`Error finding user: ${err}`);
+            console.error(`Error finding user by email ${email} -> ${err}`);
             throw err;
         }
     }
@@ -286,7 +361,7 @@ class MongoDataSource extends DataSource {
                 MongoDataSource.CONVERSATION_COLLECTION).find(
                     { $or: [ { 'messages.from.id': { $eq: id } }, { 'messages.to.id': { $eq: id } } ] }).toArray();
         } catch (err) {
-            console.error(`Error finding user conversations: ${err}`);
+            console.error(`Error finding user conversations -> ${err}`);
             throw err;
         }
     }
@@ -310,7 +385,7 @@ class MongoDataSource extends DataSource {
                 return user.value;
             }
         } catch (err) {
-            console.error(`Error logging in user: ${err}`);
+            console.error(`Error logging in user ${id} -> ${err}`);
             throw err;
         }
     }
@@ -329,7 +404,7 @@ class MongoDataSource extends DataSource {
                 return user.value;
             }
         } catch (err) {
-            console.error(`Error logging in user: ${err}`);
+            console.error(`Error logging in user -> ${err}`);
             throw err;
         }
     }
@@ -353,7 +428,7 @@ class MongoDataSource extends DataSource {
 
             return users;
         } catch (err) {
-            console.error(`Error finding user: ${err}`);
+            console.error(`Error searching for user -> ${err}`);
             throw err;
         }        
     }

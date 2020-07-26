@@ -1,0 +1,9 @@
+mutation deleteContact($userId: String!, $contactId: String!) {
+    deleteContact(userId: $userId, contactId: $contactId)
+}
+
+## Variables
+{
+    "userId": "935af80c-4496-4acd-835a-cda52fe42c6c",
+    "contactId": "106bd9e3-0280-4b52-a535-5452729fab32"
+}

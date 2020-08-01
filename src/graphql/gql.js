@@ -36,11 +36,14 @@ export const typeDefs = gql`
         firstName: String!
         lastName: String!
         email: String!
+        nickname: String,
         password: String!
         contacts: [User]!
         created: DateTime!
         lastLogin: DateTime
         online: Boolean!
+        refreshToken: String
+        status: String
     }
 
     input UserInput {
@@ -59,13 +62,13 @@ export const typeDefs = gql`
         addContact(userId: String!, contactId: String!): User
         addMessageToConversation(id: String!, msg: MessageInput): Conversation
         createConversation(msg: MessageInput!): Conversation
-        createUser(firstName: String!, lastName: String!, email: String!, password: String): User
+        createUser(firstName: String!, lastName: String!, email: String!, nickname: String!, password: String): User
         deleteContact(userId: String!, contactId: String!): User
         deleteConversation(id: String!): Boolean!
         deleteMessageFromConversation(conversationId: String!, msgId: String!): Boolean!
         deleteUser(id: String!): Boolean!
         editMessageInConversation(conversationId: String!, msgId: String!, body: String!): Conversation
-        loginUser(id: String!): User
+        loginUser(email: String!, password: String!): User
         logoutUser(id: String!): User
     }
 `;
@@ -99,8 +102,15 @@ export const resolvers = {
         createConversation: async (src, { msg }, { dataSources }) => {
             return await dataSources.mongo.createConversation(msg);
         },
-        createUser: async (src, { firstName, lastName, email, password }, { dataSources }) => {
-            return await dataSources.mongo.createUser(firstName, lastName, email, password);
+        createUser: async (src, { 
+            firstName, 
+            lastName, 
+            email, 
+            nickname, 
+            password,
+        }, { dataSources }) => {
+            return await dataSources.mongo.createUser(
+                firstName, lastName, email, nickname, password);
         },
         deleteContact: async (src, { userId, contactId }, { dataSources }) => {
             return await dataSources.mongo.deleteContact(userId, contactId);
@@ -117,8 +127,8 @@ export const resolvers = {
         editMessageInConversation: async (src, { conversationId, msgId, body }, { dataSources }) => {
             return await dataSources.mongo.editMessageInConveration(conversationId, msgId, body);  
         },
-        loginUser: async (src, { id }, { dataSources }) => {
-            return await dataSources.mongo.loginUser(id);
+        loginUser: async (src, { email, password }, { dataSources }) => {
+            return await dataSources.mongo.loginUser(email, password);
         },
         logoutUser: async (src, { id }, { dataSources }) => {
             return await dataSources.mongo.logoutUser(id);

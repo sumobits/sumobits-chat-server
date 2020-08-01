@@ -1,5 +1,7 @@
-mutation createUser($first: String!, $last: String!, $email: String!, $password: String!) {
-  createUser(firstName: $first, lastName: $last, email:$email, password: $password) {
+mutation createUser($first: String!, $last: String!, $email: String!, 
+  $nickname: String! $password: String!) {
+  createUser(firstName: $first, lastName: $last, email:$email, 
+    nickname: $nickname, password: $password) {
     id
     created
   }
@@ -10,5 +12,6 @@ mutation createUser($first: String!, $last: String!, $email: String!, $password:
   "first": "Someone",
   "last": "Noone",
   "email": "someone@nowhere.co",
+  "nickname": "pookie",
   "password": "password1234"
 }

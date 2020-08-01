@@ -92,8 +92,12 @@
           "description": "The user's email address.",
           "type": "string"
         },
-        "password": {
-          "description": "The user's password.",
+        "nickname": {
+          "description": "The user's nickname.",
+          "type": "string"
+        },
+        "status": {
+          "description": "The user's custom status.",
           "type": "string"
         },
         "contacts": {
@@ -112,6 +116,18 @@
           "default": false,
           "description": "Is the user currently online?",
           "type": "boolean"
+        },
+        "accessToken": {
+          "description": "The user's firebase provided access token",
+          "type": "string"
+        },
+        "refreshToken": {
+          "description": "The user's firebase provided refresh token",
+          "type": "string"
+        },
+        "tokenExpiry": {
+          "description": "The user's firebase provided token expiration time",
+          "type": "string"
         }
       },
       "required": [ "id", "email", "firstName", "lastName", "password", "online" ]

@@ -4,6 +4,7 @@
 import { DataSource } from 'apollo-datasource';
 import { MongoClient } from 'mongodb';
 import moment from 'moment';
+import FirebaseUtil from '../util/firebase';
 import Locker from '../util/locker';
 
 const lookupUser = async (database, userId) => {
@@ -156,7 +157,7 @@ class MongoDataSource extends DataSource {
         }
     }
 
-    createUser = async (firstName, lastName, email, password) => {
+    createUser = async (firstName, lastName, email, nickname, password) => {
         if (!this.client) {
             throw new Error('MongoClient failed to initialize');
         }
@@ -166,12 +167,18 @@ class MongoDataSource extends DataSource {
             firstName,
             lastName,
             email,
-            password,
+            nickname,
             created: moment().format(),
             online: false,
         };
 
         try {
+            const newUser = await FirebaseUtil.createUser(user.email, password);
+
+            if (newUser) {
+                user.refreshToken = newUser.refreshToken;
+            }
+            
             const result = await this.database.collection(
                 MongoDataSource.USER_COLLECTION).insertOne(user);
 
@@ -366,14 +373,18 @@ class MongoDataSource extends DataSource {
         }
     }
 
-    loginUser = async id => {
+    loginUser = async (email, password) => {
         if (!this.client) {
             throw new Error('MongoClient failed to initialize');
         }
 
         try {
             const user = await this.database.collection(
-                MongoDataSource.USER_COLLECTION).findOneAndUpdate({ id }, 
+                MongoDataSource.USER_COLLECTION).findOneAndUpdate({ 
+                        $and: [
+                            { email : { $eq: email } },
+                        ], 
+                    }, 
                     {
                         $set: {
                             lastLogin: moment().format(), 
@@ -382,6 +393,7 @@ class MongoDataSource extends DataSource {
                     }, { returnOriginal: false });
 
             if (user) {
+                await FirebaseUtil.login(user.email, password);
                 return user.value;
             }
         } catch (err) {
@@ -401,6 +413,7 @@ class MongoDataSource extends DataSource {
                     { $set: { online: false } }, { returnOriginal: false });
 
             if (user) {
+                await FirebaseUtil.logout();
                 return user.value;
             }
         } catch (err) {
@@ -420,9 +433,10 @@ class MongoDataSource extends DataSource {
                 MongoDataSource.USER_COLLECTION).find(
                     { 
                         $or: [
+                            { email: { $regex: regex } },
                             { firstName: { $regex: regex } },
                             { lastName: { $regex: regex } },
-                            { email: { $regex: regex } },
+                            { nickname: { $regex: regex } },
                         ]
                     }).toArray();
 

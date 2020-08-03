@@ -20,9 +20,12 @@ const config = {
 
 class FirebaseUtil {
 
+    constructor () {
+        firebase.initializeApp(config);
+    }
+
     createUser = async (email, passowrd) => {
         try {
-            firebase.initializeApp(config);
             await firebase.auth().createUserWithEmailAndPassword(email, passowrd);
             console.debug(`registered new user -> ${email}`);
             return firebase.auth().currentUser;
@@ -30,11 +33,10 @@ class FirebaseUtil {
             console.error(`error registering user<${email}> -> ${err}`);
             throw err;
         }
-    };
+    }
 
     login = async (email, passowrd) => {
         try {
-            firebase.initializeApp(config);
             await firebase.auth().signInWithEmailAndPassword(email, passowrd);
             console.debug(`user -> ${email} signed in`);
             return firebase.auth().currentUser;
@@ -42,18 +44,17 @@ class FirebaseUtil {
             console.error(`error signing in user<${email}> -> ${err}`);
             throw err;
         }
-    };
+    }
 
     logout = async () => {
         try {
-            firebase.initializeApp(config);
             await firebase.auth().signOut();
             console.debug('user signed out');
         } catch (err) {
             console.error(`error signing user out -> ${err}`);
             throw err;
         }
-    };
+    }
 };
 
 export default new FirebaseUtil();

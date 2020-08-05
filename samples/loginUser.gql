@@ -1,7 +1,13 @@
 mutation loginUser($email: String!, $password: String!) {
     loginUser(email: $email, password: $password) {
+        id
         email
-        contacts
+        nickname
+        contacts{
+          id
+          email
+          nickname
+        }
         lastLogin
         online
         status

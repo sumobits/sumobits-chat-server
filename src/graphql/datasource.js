@@ -170,6 +170,7 @@ class MongoDataSource extends DataSource {
             nickname,
             created: moment().format(),
             online: false,
+            contacts: [],
         };
 
         try {
@@ -348,7 +349,7 @@ class MongoDataSource extends DataSource {
         try {
             const users = await this.database.collection(
                 MongoDataSource.USER_COLLECTION).find({ email: { $eq: email } }).toArray();
-            console.log(JSON.stringify(users));
+
             if (users) {
                 return users[0];
             }
@@ -393,11 +394,11 @@ class MongoDataSource extends DataSource {
                     }, { returnOriginal: false });
 
             if (user) {
-                await FirebaseUtil.login(user.email, password);
+                await FirebaseUtil.login(email, password);
                 return user.value;
             }
         } catch (err) {
-            console.error(`Error logging in user ${id} -> ${err}`);
+            console.error(`Error logging in user ${email} -> ${err}`);
             throw err;
         }
     }

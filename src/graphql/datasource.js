@@ -381,11 +381,8 @@ class MongoDataSource extends DataSource {
 
         try {
             const user = await this.database.collection(
-                MongoDataSource.USER_COLLECTION).findOneAndUpdate({ 
-                        $and: [
-                            { email : { $eq: email } },
-                        ], 
-                    }, 
+                MongoDataSource.USER_COLLECTION).findOneAndUpdate(
+                    { email : { $eq: email } }, 
                     {
                         $set: {
                             lastLogin: moment().format(), 
